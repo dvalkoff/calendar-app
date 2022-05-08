@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.valkov.calendarapp.invite.Invitation;
 import ru.valkov.calendarapp.invite.InvitationRepository;
 import ru.valkov.calendarapp.mail.sender.EmailSenderAdapter;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
@@ -24,9 +25,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static ru.valkov.calendarapp.invite.InvitationStatus.QUESTIONABLE;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {MeetingService.class})
@@ -78,6 +79,44 @@ class MeetingServiceTest {
         // then
         verify(meetingRepository, times(1))
                 .deleteByOwnerIdAndGroupId(ownerId, groupId);
+    }
+
+    @Test
+    void updateByOwnerIdAndGroupId() {
+        // given
+        Long ownerId = 1L;
+        String groupId = "groupId";
+        User user = givenUser();
+        MeetingRequest request = givenMeetingRequest();
+        UserResponse userResponse = new UserResponse();
+        Meeting meeting = givenMeeting();
+        List<Invitation> affectedInvitations = List.of(new Invitation());
+        when(userService.getById(ownerId)).thenReturn(userResponse);
+        when(userMapper.map(userResponse)).thenReturn(user);
+        when(meetingMapper.map(request, user, Optional.of(groupId))).thenReturn(meeting);
+        when(meetingRepository.getAllIdsByOwnerIdAndGroupIdOrderByBeginDateTime(ownerId, groupId))
+                .thenReturn(List.of(1L, 2L, 3L));
+        when(invitationRepository.findAllByMeetingGroupId(groupId))
+                .thenReturn(affectedInvitations);
+        // when
+        meetingService.updateByOwnerIdAndGroupId(ownerId, groupId, request);
+        // then
+        InOrder order = inOrder(userService, userMapper, meetingMapper, meetingRepository, invitationRepository, emailSenderAdapter);
+        order.verify(userService, times(1))
+                .getById(ownerId);
+        order.verify(userMapper, times(1))
+                .map(userResponse);
+        order.verify(meetingMapper, times(1))
+                        .map(request, user, Optional.of(groupId));
+        order.verify(meetingRepository, times(1))
+                .getAllIdsByOwnerIdAndGroupIdOrderByBeginDateTime(ownerId, groupId);
+        order.verify(invitationRepository, times(1))
+                .findAllByMeetingGroupId(groupId);
+        affectedInvitations
+                .forEach(invitation -> assertThat(invitation.getInvitationStatus()).isEqualTo(QUESTIONABLE));
+        order.verify(meetingRepository, times(1)).saveAll(anyList());
+        order.verify(emailSenderAdapter, times(1))
+                .sendInvitationEmails(affectedInvitations);
     }
 
     private User givenUser() {

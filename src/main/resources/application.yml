@@ -24,5 +24,9 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
-
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /openapi/api.yml
 basePath: http://localhost:8080

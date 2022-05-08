@@ -56,7 +56,7 @@ public class MeetingService {
             Function<Integer, TemporalAmount> periodAdder = getPeriodAdder(meeting.getPeriodicity());
             LocalDateTime nextBeginDateTime = meeting.getBeginDateTime();
             LocalDateTime nextEndDateTime = meeting.getEndDateTime();
-            while (canAddOneMoreMeeting(meeting, nextBeginDateTime)) {
+            while (canCreateOneMoreMeeting(meeting, nextBeginDateTime)) {
                 nextBeginDateTime = nextBeginDateTime.plus(periodAdder.apply(1));
                 nextEndDateTime = nextEndDateTime.plus(periodAdder.apply(1));
                 Meeting newMeeting = meeting.clone();
@@ -68,7 +68,7 @@ public class MeetingService {
         return meetings;
     }
 
-    private boolean canAddOneMoreMeeting(Meeting meeting, LocalDateTime nextMeetingBeginDateTime) {
+    private boolean canCreateOneMoreMeeting(Meeting meeting, LocalDateTime nextMeetingBeginDateTime) {
         return (meeting.getUntil().atStartOfDay().isAfter(nextMeetingBeginDateTime));
     }
 

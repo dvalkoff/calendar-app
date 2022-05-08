@@ -14,8 +14,6 @@ services:
       SPRING_DATASOURCE_USERNAME: "argoc"
       SPRING_DATASOURCE_PASSWORD: "123"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
-    networks:
-      - postgres
 
   postgres:
     container_name: postgres_container_trpp
@@ -24,10 +22,6 @@ services:
       POSTGRES_DB: "spring_db"
       POSTGRES_USER: "argoc"
       POSTGRES_PASSWORD: "123"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
-    volumes:
-      - ../Init Database:/docker-entrypoint-initdb.d
-      - .:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -36,35 +30,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    restart: unless-stopped
+    restart: always
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 4G
-    networks:
-      - postgres
-
-  pgadmin:
-    container_name: pgadmin_container_trpp
-    image: dpage/pgadmin4:5.7
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "umpa@lumpa.com"
-      PGADMIN_DEFAULT_PASSWORD: "123"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - ./pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 1G
-    networks:
-      - postgres
-
-networks:
-  postgres:
-    driver: bridge

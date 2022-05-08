@@ -1,0 +1,14 @@
+image:
+  name: maven:3.8.5-openjdk-18
+
+stages:
+  - package
+
+cache:
+  paths:
+    - .m2/repository/
+
+package:
+  stage: package
+  script:
+    - mvn $MAVEN_CLI_OPTS clean package
