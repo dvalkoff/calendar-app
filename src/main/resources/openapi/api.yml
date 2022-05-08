@@ -1,0 +1,500 @@
+openapi: 3.0.3
+
+info:
+  title: Calendar application
+  description: project that will help you to manage your time
+  version: 1.0.0
+
+servers:
+  - url: "http://localhost:{port}"
+    description: local server
+    variables:
+      port:
+        default: '8080'
+
+paths:
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        $ref: '#/components/requestBodies/UserRequestBody'
+      description: create an user
+      responses:
+        '200':
+          description: user is created
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: id of saved user
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    get:
+      operationId: getUsers
+      description: get all users
+      responses:
+        '200':
+          description: list of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+  /users/{userId}:
+    get:
+      operationId: getUserById
+      description: get user by id
+      responses:
+        '200':
+          description: specified user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: deleteUserById
+      description: delete user by id
+      responses:
+        '200':
+          description: user is deleted
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateUser
+      description: update user by id
+      requestBody:
+        $ref: '#/components/requestBodies/UserRequestBody'
+      responses:
+        '200':
+          description: user is successfully updated
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+  /users/{userId}/meetings:
+    post:
+      operationId: createMeeting
+      requestBody:
+        $ref: '#/components/requestBodies/MeetingRequestBody'
+      description: create a meeting
+      responses:
+        '200':
+          description: meeting is created
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    description: groud id of saved meetings
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    get:
+      operationId: getMeetings
+      description: get all meeting
+      responses:
+        '200':
+          description: list of all meetings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeetingResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+  /users/{userId}/meetings/{meetingId}:
+    get:
+      operationId: getMeetingByGroupId
+      description: get meeting by group id
+      responses:
+        '200':
+          description: specified meeting
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeetingResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: deleteMeetingByGroupId
+      description: delete meeting by group id
+      responses:
+        '200':
+          description: meetings is (are) deleted
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateMeeting
+      description: update meeting by group id
+      requestBody:
+        $ref: '#/components/requestBodies/MeetingRequestBody'
+      responses:
+        '200':
+          description: meeting is successfully updated
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+      - name: meetingId
+        description: meeting id
+        required: true
+        in: path
+        schema:
+          type: string
+  /users/{userId}/meetings/filtering:
+    get:
+      operationId: getMeetingsByStartTimeAndEndTime
+      description: get all meeting with the specified time
+      responses:
+        '200':
+          description: list of all meetings with the specified time
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeetingResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      parameters:
+        - name: userId
+          description: user id
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int64
+        - name: from
+          description: start time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          description: end time
+          in: query
+          schema:
+            type: string
+            format: date-time
+  /users/{userId}/meetings/{meetingId}/invitations:
+    post:
+      operationId: createInvitation
+      requestBody:
+        $ref: '#/components/requestBodies/InviteRequestBody'
+      description: invite user on a meeting
+      responses:
+        '200':
+          description: the invitation is sent
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    get:
+      operationId: getInvitationByUserIdAndMeetingId
+      description: get user's invitation by meeting id
+      responses:
+        '200':
+          description: meeting invitation list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateInvitationByUserIdAndMeetingId
+      description: update user's invitation by meeting id
+      parameters:
+        - name: invitationStatus
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/InvitationStatusResponse'
+      responses:
+        '200':
+          description: invitation is successfully updated
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+      - name: meetingId
+        description: meeting group id
+        required: true
+        in: path
+        schema:
+          type: string
+
+components:
+  schemas:
+    UserRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          pattern: '^(.+)@(.+)$'
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+          minLength: 1
+        middleName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+    UserResponse:
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+    MeetingRequest:
+      type: object
+      required:
+        - name
+        - beginDateTime
+        - endDateTime
+        - periodicity
+        - until
+      properties:
+        name:
+          type: string
+          minLength: 1
+        beginDateTime:
+          type: string
+          format: date-time
+        endDateTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        periodicity:
+          $ref: '#/components/schemas/PeriodicityResponse'
+        until:
+          type: string
+          format: date
+    MeetingResponse:
+      required:
+        - id
+        - groupId
+        - name
+        - beginDateTime
+        - endDateTime
+        - owner
+        - periodicity
+        - until
+      properties:
+        id:
+          type: integer
+          format: int64
+        groupId:
+          type: string
+        name:
+          type: string
+        beginDateTime:
+          type: string
+          format: date-time
+        endDateTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        description:
+          type: string
+        owner:
+          $ref: '#/components/schemas/UserResponse'
+        periodicity:
+          $ref: '#/components/schemas/PeriodicityResponse'
+        until:
+          type: string
+          format: date
+    InviteRequest:
+      required:
+        - invitedUserId
+      properties:
+        invitedUserId:
+          type: integer
+          format: int64
+    InviteResponse:
+      required:
+        - meetings
+        - invitedUser
+      properties:
+        meetings:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingResponse'
+        invitedUser:
+          $ref: '#/components/schemas/UserResponse'
+        invitationStatus:
+          $ref: '#/components/schemas/InvitationStatusResponse'
+    PeriodicityResponse:
+      type: string
+      enum:
+        - NONE
+        - DAY
+        - WEEK
+        - MONTH
+    ErrorResponse:
+      description: Error with a message
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+          minLength: 1
+    InvitationStatusResponse:
+      type: string
+      enum:
+        - ACCEPTED
+        - REJECTED
+        - QUESTIONABLE
+        - NEW
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  requestBodies:
+    UserRequestBody:
+      description: user details request body
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserRequest'
+    MeetingRequestBody:
+      description: meeting details request body
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MeetingRequest'
+    InviteRequestBody:
+      description: invite details request body
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InviteRequest'
