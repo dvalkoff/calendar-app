@@ -25,6 +25,8 @@ RESTful API Календарь, имеющий следующую функцио
 * PostgreSQL
 * OpenApi
 * Lombok
+* Jakarta Mail API
 
 Для создания публичного API был использован OpenApi.
-Можно использовать готовый openapi-UI по адресу http://{хост}:{порт}/swagger-ui.html 
+Можно использовать готовый openapi-UI по адресу http://{хост}:8080/swagger-ui.html
+Хост и порт определяются тем, где Вы собираетесь развертывать сервис.
