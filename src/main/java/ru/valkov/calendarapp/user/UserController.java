@@ -9,9 +9,6 @@ import ru.valkov.calendarapp.openapi.model.UserResponse;
 
 import java.util.List;
 
-import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrap;
-import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResult;
-
 @Controller
 @RequiredArgsConstructor
 public class UserController implements UsersApi {
@@ -19,26 +16,31 @@ public class UserController implements UsersApi {
 
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
-        return wrap(userService::createUser, userRequest);
+        Long body = userService.createUser(userRequest);
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<List<UserResponse>> getUsers() {
-        return wrap(userService::getUsers);
+        List<UserResponse> body = userService.getUsers();
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<Void> deleteUserById(Long userId) {
-        return wrapWithoutResult(userService::deleteById, userId);
+        userService.deleteById(userId);
+        return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<UserResponse> getUserById(Long userId) {
-        return wrap(userService::getById, userId);
+        UserResponse body = userService.getById(userId);
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<Void> updateUser(Long userId, UserRequest userRequest) {
-        return wrapWithoutResult(userService::updateById, userId, userRequest);
+        userService.updateById(userId, userRequest);
+        return ResponseEntity.ok().build();
     }
 }

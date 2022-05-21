@@ -10,9 +10,6 @@ import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrap;
-import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResult;
-
 @Controller
 @RequiredArgsConstructor
 public class MeetingController implements MeetingsApi {
@@ -20,31 +17,37 @@ public class MeetingController implements MeetingsApi {
 
     @Override
     public ResponseEntity<Object> createMeeting(Long usersId, MeetingRequest meetingRequest) {
-        return wrap(meetingService::createMeeting, usersId, meetingRequest);
+        String body = meetingService.createMeeting(usersId, meetingRequest);
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<List<MeetingResponse>> getMeetings(Long usersId) {
-        return wrap(meetingService::getMeetings, usersId);
+        List<MeetingResponse> body = meetingService.getMeetings(usersId);
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<Void> deleteMeetingByGroupId(Long usersId, String meetingGroupId) {
-        return wrapWithoutResult(meetingService::deleteByOwnerIdAndGroupId, usersId,  meetingGroupId);
+        meetingService.deleteByOwnerIdAndGroupId(usersId,  meetingGroupId);
+        return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<List<MeetingResponse>> getMeetingByGroupId(Long usersId, String meetingGroupId) {
-        return wrap(meetingService::getByOwnerIdAndGroupId, usersId,  meetingGroupId);
+        List<MeetingResponse> body = meetingService.getByOwnerIdAndGroupId(usersId, meetingGroupId);
+        return ResponseEntity.ok(body);
     }
 
     @Override
     public ResponseEntity<Void> updateMeeting(Long usersId, String meetingGroupId, MeetingRequest meetingRequest) {
-        return wrapWithoutResult(meetingService::updateByOwnerIdAndGroupId, usersId, meetingGroupId, meetingRequest);
+        meetingService.updateByOwnerIdAndGroupId(usersId, meetingGroupId, meetingRequest);
+        return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<List<MeetingResponse>> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime from, OffsetDateTime to) {
-        return wrap(meetingService::getMeetingsByStartTimeAndEndTime, userId, from, to);
+        List<MeetingResponse> body = meetingService.getMeetingsByStartTimeAndEndTime(userId, from, to);
+        return ResponseEntity.ok(body);
     }
 }
