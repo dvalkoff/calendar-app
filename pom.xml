@@ -152,7 +152,7 @@
                                 <limit implementation="org.jacoco.report.check.Limit">
                                     <counter>INSTRUCTION</counter>
                                     <value>COVEREDRATIO</value>
-                                    <minimum>85%</minimum>
+                                    <minimum>80%</minimum>
                                 </limit>
                             </limits>
                         </rule>
@@ -166,6 +166,10 @@
                         <exclude>ru/valkov/calendarapp/user/User.class</exclude>
                         <!-- Exception classes -->
                         <exclude>ru/valkov/calendarapp/exceptions/**</exclude>
+                        <!-- Controllers do not contain business logic -->
+                        <exclude>ru/valkov/calendarapp/*/*Controller.class</exclude>
+                        <!-- Class with main method -->
+                        <exclude>ru/valkov/calendarapp/CalendarAppApplication.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -3,6 +3,7 @@ package ru.valkov.calendarapp.user;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,6 +13,7 @@ import ru.valkov.calendarapp.exceptions.NotFoundException;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -161,6 +163,19 @@ class UserServiceTest {
                 .map(request);
         order.verify(userRepository, never())
                 .save(user);
+    }
+
+    @Test
+    void getUsers() {
+        // given
+        List<User> expectedUsers = List.of(givenUser());
+        when(userRepository.findAll())
+                .thenReturn(expectedUsers);
+        // when
+        List<UserResponse> actualUsers = userService.getUsers();
+        // then
+        assertThat(actualUsers.size())
+                .isEqualTo(expectedUsers.size());
     }
 
     private User givenUser() {

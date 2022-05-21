@@ -9,12 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.valkov.calendarapp.mail.sender.EmailSenderAdapter;
+import ru.valkov.calendarapp.meeting.Meeting;
 import ru.valkov.calendarapp.meeting.MeetingService;
+import ru.valkov.calendarapp.openapi.model.*;
 import ru.valkov.calendarapp.user.UserService;
-import ru.valkov.calendarapp.openapi.model.InviteRequest;
-import ru.valkov.calendarapp.openapi.model.MeetingResponse;
-import ru.valkov.calendarapp.openapi.model.UserResponse;
-import ru.valkov.calendarapp.openapi.model.InvitationStatusResponse;
+
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,5 +96,23 @@ class InvitationServiceTest {
         InOrder order = inOrder(invitationMapper, invitationRepository);
         order.verify(invitationMapper, times(1)).mapInvitationStatus(statusResponse);
         order.verify(invitationRepository, times(1)).findByMeetingGroupIdAndUserId(invitedUserId, groupId);
+    }
+
+    @Test
+    void getByUserIdAndMeetingId() {
+        // given
+        Long userId = 1L;
+        String meetingGroup = "meetingGroup";
+        Invitation invitation = givenInvitation();
+        List<Invitation> invitations = List.of(invitation);
+        when(invitationRepository.findByMeetingGroupIdAndUserId(userId, meetingGroup))
+                .thenReturn(invitations);
+        when(invitationMapper.map(invitation))
+                .thenReturn(new InviteResponse());
+        // when
+        InviteResponse response = invitationService.getByUserIdAndMeetingId(userId, meetingGroup);
+        // then
+        assertThat(response).isNotNull();
+
     }
 }

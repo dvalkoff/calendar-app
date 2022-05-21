@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.valkov.calendarapp.exceptions.BadRequestException;
 import ru.valkov.calendarapp.invite.Invitation;
 import ru.valkov.calendarapp.invite.InvitationRepository;
 import ru.valkov.calendarapp.mail.sender.EmailSenderAdapter;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
+import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 import ru.valkov.calendarapp.openapi.model.PeriodicityResponse;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 import ru.valkov.calendarapp.user.User;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static ru.valkov.calendarapp.invite.InvitationStatus.QUESTIONABLE;
@@ -117,6 +120,55 @@ class MeetingServiceTest {
         order.verify(meetingRepository, times(1)).saveAll(anyList());
         order.verify(emailSenderAdapter, times(1))
                 .sendInvitationEmails(affectedInvitations);
+    }
+
+    @Test
+    void getMeetingsByUserId() {
+        // given
+        Long userId = 1L;
+        List<Meeting> expected = List.of(givenMeeting());
+        when(meetingRepository.findAllByUserId(userId))
+                .thenReturn(expected);
+        // when
+        List<MeetingResponse> actual = meetingService.getMeetings(userId);
+        // then
+        verify(userService).getById(userId);
+        verify(meetingRepository).findAllByUserId(userId);
+        assertThat(actual.size()).isEqualTo(expected.size());
+    }
+
+    @Test
+    void getMeetingsByStartTimeAndEndTime() {
+        // given
+        Long userId = 1L;
+        List<Meeting> expected = List.of(givenMeeting());
+        OffsetDateTime beginTime = OffsetDateTime.MIN;
+        OffsetDateTime endTime = OffsetDateTime.MIN;
+        when(meetingRepository.findAllByStartTimeAndEndTime(userId, beginTime.toLocalDateTime(), endTime.toLocalDateTime()))
+                .thenReturn(expected);
+        // when
+        List<MeetingResponse> actual = meetingService.getMeetingsByStartTimeAndEndTime(userId, beginTime, endTime);
+        // then
+        verify(userService).getById(userId);
+        verify(meetingRepository).findAllByStartTimeAndEndTime(userId, beginTime.toLocalDateTime(), endTime.toLocalDateTime());
+        assertThat(actual.size()).isEqualTo(expected.size());
+    }
+
+    @Test
+    void getMeetingsByInvalidStartTimeAndEndTime() {
+        // given
+        Long userId = 1L;
+        List<Meeting> expected = List.of(givenMeeting());
+        OffsetDateTime beginTime = OffsetDateTime.MAX;
+        OffsetDateTime endTime = OffsetDateTime.MIN;
+        when(meetingRepository.findAllByStartTimeAndEndTime(userId, beginTime.toLocalDateTime(), endTime.toLocalDateTime()))
+                .thenReturn(expected);
+        // when
+        assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(() -> meetingService.getMeetingsByStartTimeAndEndTime(userId, beginTime, endTime));
+        // then
+        verify(userService, never()).getById(userId);
+        verify(meetingRepository, never()).findAllByStartTimeAndEndTime(userId, beginTime.toLocalDateTime(), endTime.toLocalDateTime());
     }
 
     private User givenUser() {
