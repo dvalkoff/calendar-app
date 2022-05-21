@@ -110,6 +110,7 @@
                                 <basePackage>${default.package}</basePackage>
                                 <configPackage>${default.package}.configuration</configPackage>
                                 <dateLibrary>java8</dateLibrary>
+                                <useTags>true</useTags>
                                 <interfaceOnly>true</interfaceOnly>
                                 <performBeanValidation>true</performBeanValidation>
                             </configOptions>

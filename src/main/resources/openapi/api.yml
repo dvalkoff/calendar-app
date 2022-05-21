@@ -12,9 +12,19 @@ servers:
       port:
         default: '8080'
 
+tags:
+  - name: users
+    description: users REST methods
+  - name: meetings
+    description: meetings REST methods
+  - name: invitations
+    description: invitations REST methods
+
 paths:
   /users:
     post:
+      tags:
+        - users
       operationId: createUser
       requestBody:
         $ref: '#/components/requestBodies/UserRequestBody'
@@ -37,6 +47,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     get:
+      tags:
+        - users
       operationId: getUsers
       description: get all users
       responses:
@@ -54,6 +66,8 @@ paths:
           $ref: '#/components/responses/Error'
   /users/{userId}:
     get:
+      tags:
+        - users
       operationId: getUserById
       description: get user by id
       responses:
@@ -70,6 +84,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
+      tags:
+        - users
       operationId: deleteUserById
       description: delete user by id
       responses:
@@ -82,6 +98,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     put:
+      tags:
+        - users
       operationId: updateUser
       description: update user by id
       requestBody:
@@ -105,6 +123,8 @@ paths:
           format: int64
   /users/{userId}/meetings:
     post:
+      tags:
+        - meetings
       operationId: createMeeting
       requestBody:
         $ref: '#/components/requestBodies/MeetingRequestBody'
@@ -126,6 +146,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     get:
+      tags:
+        - meetings
       operationId: getMeetings
       description: get all meeting
       responses:
@@ -151,6 +173,8 @@ paths:
           format: int64
   /users/{userId}/meetings/{meetingId}:
     get:
+      tags:
+        - meetings
       operationId: getMeetingByGroupId
       description: get meeting by group id
       responses:
@@ -169,6 +193,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
+      tags:
+        - meetings
       operationId: deleteMeetingByGroupId
       description: delete meeting by group id
       responses:
@@ -181,6 +207,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     put:
+      tags:
+        - meetings
       operationId: updateMeeting
       description: update meeting by group id
       requestBody:
@@ -210,6 +238,8 @@ paths:
           type: string
   /users/{userId}/meetings/filtering:
     get:
+      tags:
+        - meetings
       operationId: getMeetingsByStartTimeAndEndTime
       description: get all meeting with the specified time
       responses:
@@ -247,6 +277,8 @@ paths:
             format: date-time
   /users/{userId}/meetings/{meetingId}/invitations:
     post:
+      tags:
+        - invitations
       operationId: createInvitation
       requestBody:
         $ref: '#/components/requestBodies/InviteRequestBody'
@@ -270,6 +302,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     get:
+      tags:
+        - invitations
       operationId: getInvitationByUserIdAndMeetingId
       description: get user's invitation by meeting id
       responses:
@@ -286,6 +320,8 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     put:
+      tags:
+        - invitations
       operationId: updateInvitationByUserIdAndMeetingId
       description: update user's invitation by meeting id
       parameters:
