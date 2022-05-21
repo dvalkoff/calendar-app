@@ -16,6 +16,7 @@
     <properties>
         <java.version>18</java.version>
         <default.package>ru.valkov.calendarapp.openapi</default.package>
+        <jacoco-plugin.version>0.8.8</jacoco-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -117,6 +118,56 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+<!--                        <phase>test</phase>-->
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <rule implementation="org.jacoco.maven.RuleConfiguration">
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit implementation="org.jacoco.report.check.Limit">
+                                    <counter>INSTRUCTION</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>85%</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                    <excludes>
+                        <!-- OpenApi generated code -->
+                        <exclude>ru/valkov/calendarapp/openapi/**</exclude>
+                        <!-- Entities -->
+                        <exclude>ru/valkov/calendarapp/invite/Invitation.class</exclude>
+                        <exclude>ru/valkov/calendarapp/meeting/Meeting.class</exclude>
+                        <exclude>ru/valkov/calendarapp/user/User.class</exclude>
+                        <!-- Exception classes -->
+                        <exclude>ru/valkov/calendarapp/exceptions/**</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
         <finalName>spring-boot-docker-maven</finalName>
