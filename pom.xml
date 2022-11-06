@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.7</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>ru.valkov</groupId>
+    <artifactId>calendar-app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>calendar-app</name>
+    <description>Calendar application</description>
+    <properties>
+        <java.version>18</java.version>
+        <default.package>ru.valkov.calendarapp.openapi</default.package>
+        <jacoco-plugin.version>0.8.8</jacoco-plugin.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.8</version>
+        </dependency>
+        <!-- required for openapi codegen -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.13.2</version>
+        </dependency>
+
+        <!-- testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>5.4.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/api.yml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <apiPackage>${default.package}.controller</apiPackage>
+                            <modelPackage>${default.package}.model</modelPackage>
+                            <invokerPackage>${default.package}.invoker</invokerPackage>
+                            <ignoreFileOverride>${project.basedir}/.openapi-generator-ignore</ignoreFileOverride>
+                            <configOptions>
+                                <sourceFolder>src/generated/java/main</sourceFolder>
+                                <basePackage>${default.package}</basePackage>
+                                <configPackage>${default.package}.configuration</configPackage>
+                                <dateLibrary>java8</dateLibrary>
+                                <useTags>true</useTags>
+                                <interfaceOnly>true</interfaceOnly>
+                                <performBeanValidation>true</performBeanValidation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+<!--                        <phase>test</phase>-->
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <rule implementation="org.jacoco.maven.RuleConfiguration">
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit implementation="org.jacoco.report.check.Limit">
+                                    <counter>INSTRUCTION</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>80%</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                    <excludes>
+                        <!-- OpenApi generated code -->
+                        <exclude>ru/valkov/calendarapp/openapi/**</exclude>
+                        <!-- Entities -->
+                        <exclude>ru/valkov/calendarapp/invite/Invitation.class</exclude>
+                        <exclude>ru/valkov/calendarapp/meeting/Meeting.class</exclude>
+                        <exclude>ru/valkov/calendarapp/user/User.class</exclude>
+                        <!-- Exception classes -->
+                        <exclude>ru/valkov/calendarapp/exceptions/**</exclude>
+                        <!-- Controllers do not contain business logic -->
+                        <exclude>ru/valkov/calendarapp/*/*Controller.class</exclude>
+                        <!-- Class with main method -->
+                        <exclude>ru/valkov/calendarapp/CalendarAppApplication.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+        <finalName>spring-boot-docker-maven</finalName>
+    </build>
+</project>

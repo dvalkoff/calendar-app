@@ -1,0 +1,32 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+    show-sql: true
+  datasource:
+    hikari:
+      jdbc-url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
+  mail:
+    host: smtp.mail.ru
+    port: 587
+    username: ER_radd@mail.ru
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /openapi/api.yml
+basePath: http://localhost:8080
