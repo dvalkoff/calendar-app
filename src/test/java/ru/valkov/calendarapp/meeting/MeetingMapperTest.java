@@ -58,42 +58,6 @@ class MeetingMapperTest {
     }
 
     @Test
-    void testMap1() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
-    void mapPeriodicity() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
-    void testMapPeriodicity() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
-    void testMapPeriodicity1() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
     void mapAllFromEntitiesToResponse() {
         // given
         List<Meeting> meetings = List.of(givenMeeting());
